@@ -36,23 +36,37 @@ export function updateTop(state) {
   $('hud-score').textContent = state.score.toString();
 }
 
+// Cache for selected panel to avoid per-frame DOM rebuild
+let _selCache = null;
+
 export function updateSelected(state, onUpgrade, onSell, onCycle) {
   const panel = $('hud-selected');
   const tower = state.selectedTower;
+
   if (!tower) {
-    panel.innerHTML = '<div style="color:#666">Click a tower to select</div>';
+    if (_selCache !== null) {
+      panel.innerHTML = '<div style="color:#666">Click a tower to select</div>';
+      _selCache = null;
+    }
     return;
   }
+
   const def = TOWERS[tower.type];
   const stats = getTowerStats(tower);
   const upCost = getUpgradeCost(tower);
   const sellVal = Math.floor(tower.totalSpent * SELL_REFUND);
+  const canUp = upCost !== null && state.glimmers >= upCost;
+
+  // Key covers all values that affect panel content
+  const key = `${tower.type}|${tower.level}|${stats.damage}|${stats.range}|${tower.targetMode}|${upCost}|${sellVal}|${canUp}`;
+  if (_selCache === key) return;
+  _selCache = key;
 
   let html = `<div class="sel-title">${def.name} Lv.${tower.level + 1}</div>`;
   html += `<div class="sel-stat">Dmg: ${stats.damage} | Rng: ${stats.range}</div>`;
   html += `<div class="sel-stat">${stats.desc}</div>`;
   html += `<div class="sel-stat">Target: ${tower.targetMode}</div>`;
-  html += `<button id="btn-upgrade" ${upCost === null || state.glimmers < upCost ? 'disabled' : ''}>${upCost !== null ? `Upgrade ✦${upCost}` : 'MAX'}</button>`;
+  html += `<button id="btn-upgrade" ${!canUp ? 'disabled' : ''}>${upCost !== null ? `Upgrade ✦${upCost}` : 'MAX'}</button>`;
   html += `<button id="btn-sell">Sell ✦${sellVal}</button>`;
   html += `<button id="btn-cycle">⊕</button>`;
   panel.innerHTML = html;
@@ -68,7 +82,7 @@ export function updateSelected(state, onUpgrade, onSell, onCycle) {
 export function updateWaveButton(state, onStartWave) {
   const btn = $('btn-wave');
   if (state.waveActive) {
-    btn.textContent = 'Wave in progress';
+    btn.textContent = 'In progress';
     btn.disabled = true;
   } else if (state.wave >= TOTAL_WAVES) {
     btn.textContent = 'Complete';
