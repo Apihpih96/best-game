@@ -1,0 +1,39 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #0d0f18; font-family: 'Segoe UI', system-ui, sans-serif; color: #e0d8c8; }
+#game-wrap { position: relative; width: 960px; height: 500px; margin: 20px auto; }
+#board { display: block; background: #1a1e2e; border: 2px solid #2a2e3e; border-radius: 4px; }
+#hud { position: absolute; top: 0; right: 0; width: 160px; height: 500px; background: rgba(13,15,24,0.92); border-left: 1px solid #2a2e3e; padding: 8px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+#hud-top { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-weight: 600; }
+#hud-top span { background: rgba(42,46,62,0.6); padding: 3px 6px; border-radius: 3px; text-align: center; font-size: 12px; }
+#hud-cards { display: flex; flex-direction: column; gap: 4px; }
+.card { background: rgba(42,46,62,0.7); border: 1px solid #3a3e4e; border-radius: 4px; padding: 5px 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; transition: background 0.15s; }
+.card:hover { background: rgba(62,66,82,0.8); }
+.card.selected { border-color: #7b8cff; background: rgba(60,64,102,0.8); }
+.card.disabled { opacity: 0.4; cursor: default; }
+.card-name { font-weight: 600; }
+.card-cost { color: #ffd866; }
+.card-key { color: #888; font-size: 10px; margin-left: 4px; }
+#hud-controls { display: flex; gap: 4px; flex-wrap: wrap; }
+#hud-controls button { flex: 1; min-width: 30px; padding: 4px 2px; background: #2a2e3e; border: 1px solid #3a3e4e; color: #e0d8c8; border-radius: 3px; cursor: pointer; font-size: 11px; }
+#hud-controls button:hover { background: #3a3e4e; }
+#hud-controls button.active { background: #4a4e6e; border-color: #7b8cff; }
+#btn-wave { background: #2e4a2e; border-color: #4a6a4a; }
+#btn-wave:hover { background: #3e5a3e; }
+#hud-selected { background: rgba(42,46,62,0.5); border-radius: 4px; padding: 6px; font-size: 11px; min-height: 60px; }
+#hud-selected .sel-title { font-weight: 600; margin-bottom: 4px; }
+#hud-selected .sel-stat { color: #aaa; margin: 2px 0; }
+#hud-selected button { margin-top: 4px; padding: 3px 8px; background: #2a2e3e; border: 1px solid #3a3e4e; color: #e0d8c8; border-radius: 3px; cursor: pointer; font-size: 11px; margin-right: 4px; }
+#hud-selected button:hover { background: #3a3e4e; }
+#hud-preview { font-size: 10px; color: #888; margin-top: auto; padding: 4px; background: rgba(42,46,62,0.3); border-radius: 3px; }
+#overlay { position: absolute; inset: 0; background: rgba(10,12,20,0.88); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; padding: 20px; }
+#overlay.hidden { display: none; }
+#overlay h1 { font-size: 36px; color: #c8b8ff; margin-bottom: 8px; text-shadow: 0 0 20px rgba(140,120,255,0.5); }
+#overlay h2 { font-size: 22px; color: #ffd866; margin-bottom: 12px; }
+#overlay p { font-size: 14px; color: #aaa; margin: 4px 0; max-width: 500px; line-height: 1.5; }
+#overlay .stats { margin: 12px 0; font-size: 13px; }
+#overlay .stats div { margin: 3px 0; }
+#overlay button { margin-top: 16px; padding: 10px 28px; background: #3a4a6e; border: 1px solid #5a6a8e; color: #e0d8c8; border-radius: 6px; cursor: pointer; font-size: 16px; }
+#overlay button:hover { background: #4a5a7e; }
+#overlay .keys { font-size: 12px; color: #777; margin-top: 12px; }
+#banner { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: rgba(20,22,36,0.9); border: 1px solid #4a4e6e; border-radius: 6px; padding: 8px 24px; font-size: 18px; font-weight: 600; color: #c8b8ff; z-index: 5; pointer-events: none; transition: opacity 0.3s; }
+#banner.hidden { opacity: 0; }

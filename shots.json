@@ -1,0 +1,6 @@
+{
+  "1-play.jpg": "?shot=play&seed=1",
+  "2-title.jpg": "?shot=start&seed=1",
+  "3-victory.jpg": "?shot=victory&seed=1",
+  "4-defeat.jpg": "?shot=defeat&seed=1"
+}

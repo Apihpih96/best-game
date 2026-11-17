@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glimmerhold</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="game-wrap">
+  <canvas id="board" width="960" height="500"></canvas>
+  <div id="hud">
+    <div id="hud-top">
+      <span id="hud-glimmers" title="Glimmers">✦ 220</span>
+      <span id="hud-light" title="Light">☀ 20</span>
+      <span id="hud-wave" title="Wave">Wave 0/10</span>
+      <span id="hud-score" title="Score">0</span>
+    </div>
+    <div id="hud-cards"></div>
+    <div id="hud-controls">
+      <button id="btn-wave" type="button">Start Wave</button>
+      <button id="btn-fast" type="button" title="Fast-forward (F)">▶▶</button>
+      <button id="btn-pause" type="button" title="Pause (P)">⏸</button>
+      <button id="btn-mute" type="button" title="Mute (M)">🔊</button>
+    </div>
+    <div id="hud-selected"></div>
+    <div id="hud-preview"></div>
+  </div>
+  <div id="overlay" class="hidden"></div>
+  <div id="banner" class="hidden"></div>
+</div>
+<script type="module" src="main.js"></script>
+</body>
+</html>
