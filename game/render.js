@@ -63,10 +63,44 @@ export function drawTowers(ctx, state) {
     const stats = getTowerStats(tower);
     const x = tower.x, y = tower.y;
 
+    // Bloom aura ring (drawn behind the tower).
+    if (tower.type === 'bloom' && stats.auraRadius) {
+      ctx.strokeStyle = 'rgba(68,221,136,0.15)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x, y, stats.auraRadius, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Tower body.
     ctx.fillStyle = def.color;
-    ctx.beginPath();
-    ctx.arc(x, y, 14 + tower.level * 2, 0, Math.PI * 2);
-    ctx.fill();
+    if (tower.type === 'bloom') {
+      // Bloom: petal-like shape.
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
+        const r = 14 + tower.level * 2;
+        const pr = r * 0.55;
+        ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r);
+        ctx.lineTo(x + Math.cos(a + Math.PI / 6) * pr, y + Math.sin(a + Math.PI / 6) * pr);
+      }
+      ctx.closePath();
+      ctx.fill();
+    } else if (tower.type === 'lance') {
+      // Lance: tall diamond shape.
+      ctx.beginPath();
+      const r = 14 + tower.level * 2;
+      ctx.moveTo(x, y - r);
+      ctx.lineTo(x + r * 0.6, y);
+      ctx.lineTo(x, y + r);
+      ctx.lineTo(x - r * 0.6, y);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.arc(x, y, 14 + tower.level * 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 11px monospace';
@@ -75,6 +109,22 @@ export function drawTowers(ctx, state) {
     const lvl = tower.level + 1;
     ctx.fillText(lvl.toString(), x, y);
 
+    // Muzzle flash.
+    if (tower.flashTimer > 0) {
+      const flashAlpha = tower.flashTimer / 0.12;
+      ctx.globalAlpha = flashAlpha;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      const flashLen = 22;
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + Math.cos(tower.angle) * flashLen, y + Math.sin(tower.angle) * flashLen);
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#fff';
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    // Barrel direction line.
     ctx.strokeStyle = def.color;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -88,9 +138,43 @@ export function drawEnemies(ctx, state) {
   for (const e of state.enemies) {
     if (!e.alive) continue;
     ctx.fillStyle = e.flashTimer > 0 ? '#fff' : e.color;
-    ctx.beginPath();
-    ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
-    ctx.fill();
+
+    if (e.type === 'splitter') {
+      // Splitter: square-ish shape.
+      ctx.beginPath();
+      const r = e.radius;
+      ctx.rect(e.x - r, e.y - r, r * 2, r * 2);
+      ctx.fill();
+      // Inner split line.
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(e.x, e.y - r);
+      ctx.lineTo(e.x, e.y + r);
+      ctx.stroke();
+    } else if (e.type === 'mender') {
+      // Mender: triangle shape with a cross.
+      ctx.beginPath();
+      const r = e.radius;
+      ctx.moveTo(e.x, e.y - r);
+      ctx.lineTo(e.x + r, e.y + r);
+      ctx.lineTo(e.x - r, e.y + r);
+      ctx.closePath();
+      ctx.fill();
+      // Small cross.
+      ctx.strokeStyle = '#aaffaa';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(e.x - 3, e.y);
+      ctx.lineTo(e.x + 3, e.y);
+      ctx.moveTo(e.x, e.y - 3);
+      ctx.lineTo(e.x, e.y + 3);
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     if (e.slowTimer > 0) {
       ctx.strokeStyle = '#66ddff';

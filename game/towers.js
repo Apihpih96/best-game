@@ -19,6 +19,8 @@ export function placeTower(state, type, col, row) {
     targetMode: 'first',
     totalSpent: def.cost,
     angle: 0,
+    // Juice: muzzle flash timer.
+    flashTimer: 0,
   };
   state.towers.set(`${col},${row}`, tower);
   state.towersBuilt++;
@@ -78,14 +80,36 @@ export function acquireTarget(tower, enemies) {
 
 export function updateTowers(state, dt, spawnProjectile) {
   for (const tower of state.towers.values()) {
+    // Tick muzzle flash.
+    if (tower.flashTimer > 0) tower.flashTimer -= dt;
+
+    // Bloom Spire is aura-only — it never fires.
+    if (tower.type === 'bloom') continue;
+
     tower.cooldownTimer -= dt;
     if (tower.cooldownTimer > 0) continue;
     const target = acquireTarget(tower, state.enemies);
     if (!target) continue;
     const stats = getTowerStats(tower);
+
+    // Bloom aura: compute damage multiplier from nearby bloom towers.
+    let dmgMult = 1;
+    if (tower.type !== 'bloom') {
+      for (const other of state.towers.values()) {
+        if (other === tower || other.type !== 'bloom') continue;
+        const oStats = getTowerStats(other);
+        if (!oStats.auraRadius) continue;
+        const dx = other.x - tower.x;
+        const dy = other.y - tower.y;
+        if (dx * dx + dy * dy <= oStats.auraRadius * oStats.auraRadius) {
+          dmgMult += oStats.auraBonus;
+        }
+      }
+    }
+
     tower.cooldownTimer = stats.cooldown;
-    // Point tower at target.
     tower.angle = Math.atan2(target.y - tower.y, target.x - tower.x);
-    spawnProjectile(tower, target, stats);
+    tower.flashTimer = 0.12;
+    spawnProjectile(tower, target, stats, dmgMult);
   }
 }

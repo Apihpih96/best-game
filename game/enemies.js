@@ -2,16 +2,16 @@
 import { WAYPOINTS, ENEMIES, HP_SCALE } from './config.js';
 import { nextEntityId } from './state.js';
 
-export function spawnEnemy(state, type, waveIndex, rng) {
+export function spawnEnemy(state, type, waveIndex, rng, opts) {
   const def = ENEMIES[type];
   const scale = HP_SCALE[waveIndex] || 1;
   const hp = Math.round(def.hp * scale);
   const e = {
     id: nextEntityId(state),
     type,
-    x: WAYPOINTS[0][0],
-    y: WAYPOINTS[0][1],
-    wpIndex: 1,
+    x: opts?.x ?? WAYPOINTS[0][0],
+    y: opts?.y ?? WAYPOINTS[0][1],
+    wpIndex: opts?.wpIndex ?? 1,
     hp,
     maxHp: hp,
     speed: def.speed,
@@ -20,7 +20,7 @@ export function spawnEnemy(state, type, waveIndex, rng) {
     color: def.color,
     radius: def.radius,
     armor: def.armor,
-    progress: 0,
+    progress: opts?.progress ?? 0,
     slowTimer: 0,
     slowAmount: 0,
     flashTimer: 0,
@@ -32,6 +32,20 @@ export function spawnEnemy(state, type, waveIndex, rng) {
 }
 
 export function updateEnemies(state, dt, onLeak, onKill) {
+  // Mender healing: heal nearby allies (not self) within 70px.
+  for (const mender of state.enemies) {
+    if (!mender.alive || mender.type !== 'mender') continue;
+    for (const ally of state.enemies) {
+      if (ally === mender || !ally.alive || ally.hp >= ally.maxHp) continue;
+      const dx = ally.x - mender.x;
+      const dy = ally.y - mender.y;
+      if (dx * dx + dy * dy <= 70 * 70) {
+        const heal = Math.min(4 * dt, ally.maxHp - ally.hp);
+        ally.hp += heal;
+      }
+    }
+  }
+
   for (let i = state.enemies.length - 1; i >= 0; i--) {
     const e = state.enemies[i];
     if (!e.alive) continue;
@@ -80,6 +94,17 @@ export function updateEnemies(state, dt, onLeak, onKill) {
 
     if (e.hp <= 0 && e.alive) {
       e.alive = false;
+      // Splitter: spawn 2 motes at death position with same progress.
+      if (e.type === 'splitter') {
+        for (let s = 0; s < 2; s++) {
+          spawnEnemy(state, 'mote', state.wave - 1, null, {
+            x: e.x,
+            y: e.y,
+            wpIndex: e.wpIndex,
+            progress: e.progress,
+          });
+        }
+      }
       onKill(e);
     }
   }
@@ -87,8 +112,9 @@ export function updateEnemies(state, dt, onLeak, onKill) {
   state.enemies = state.enemies.filter(e => e.alive);
 }
 
-export function damageEnemy(state, e, rawDamage, effects) {
-  const effective = rawDamage * (1 - e.armor);
+export function damageEnemy(state, e, rawDamage, effects, opts) {
+  const ignoreArmor = opts?.ignoreArmor;
+  const effective = ignoreArmor ? rawDamage : rawDamage * (1 - e.armor);
   e.hp -= effective;
   e.flashTimer = 0.1;
   if (effects) {

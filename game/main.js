@@ -36,10 +36,10 @@ function ensureAudio() {
 
 const shotParams = parseShotParams();
 
-function spawnProjectile(tower, target, stats) {
+function spawnProjectile(tower, target, stats, dmgMult) {
   const def = TOWERS[tower.type];
   tower._color = def.color;
-  const p = spawnBolt(tower, target, stats, tower.type);
+  const p = spawnBolt(tower, target, stats, tower.type, dmgMult);
   p.color = def.color;
   state.projectiles.push(p);
   play('shoot');
@@ -83,6 +83,9 @@ function handleCellClick(col, row) {
   if (state.selectedCard) {
     if (canBuild(col, row, state.towers) && state.glimmers >= TOWERS[state.selectedCard].cost) {
       placeTower(state, state.selectedCard, col, row);
+      // Placement poof.
+      const [cx, cy] = [col * 50 + 25, row * 50 + 25];
+      fx.addSplashRing(cx, cy, 30, TOWERS[state.selectedCard].color);
       play('place');
       state.selectedCard = null;
     }

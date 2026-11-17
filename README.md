@@ -4,7 +4,7 @@
 [![rank](https://make.fun/badge/best-game-01/Apihpih96/best-game/rank.svg)](https://make.fun/bounty/best-game-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=best-game-01)
 [![reward](https://make.fun/badge/best-game-01/Apihpih96/best-game/reward.svg)](https://make.fun/bounty/best-game-01?utm_source=github&utm_medium=readme&utm_campaign=best-game-01)
 
-Defend the crystal against waves of shadow creatures. Place and upgrade towers, manage resources, and survive 10 waves.
+Defend the crystal against waves of shadow creatures. Place and upgrade towers, manage resources, and survive 12 waves.
 
 ## Run it
 
@@ -22,6 +22,8 @@ node serve.ts
 - **Ember Spire** [2] — Area splash damage (80✦)
 - **Frost Spire** [3] — Slows enemies (60✦)
 - **Arc Spire** [4] — Chain lightning (120✦)
+- **Lance Spire** [5] — Long range, ignores armour (100✦)
+- **Bloom Spire** [6] — Aura boosts nearby tower damage (70✦)
 
 ## Enemies
 
@@ -29,13 +31,15 @@ node serve.ts
 - **Skulker** — Fast and fragile
 - **Husk** — Slow, heavily armoured
 - **Wisp** — Very fast, low HP
-- **Gloombrute** — Boss (wave 10)
+- **Gloombrute** — Boss (waves 11–12)
+- **Splitter** — Splits into 2 motes on death (wave 10+)
+- **Mender** — Heals nearby allies (wave 12)
 
 ## Controls
 
 | Key | Action |
 |-----|--------|
-| 1-4 | Select tower |
+| 1-6 | Select tower |
 | Click | Place tower / Select tower |
 | Space | Start wave |
 | P | Pause |
@@ -48,11 +52,11 @@ node serve.ts
 ## How to Play
 
 1. Click Play or press Enter to start
-2. Select a tower card (1-4) and click a green cell to place it
+2. Select a tower card (1-6) and click a green cell to place it
 3. Press Space to start each wave
 4. Earn glimmers by killing enemies and clearing waves
 5. Click placed towers to upgrade or sell them
-6. Survive all 10 waves to win!
+6. Survive all 12 waves to win!
 
 ## Tech
 

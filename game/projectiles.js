@@ -2,7 +2,7 @@
 import { nextEntityId } from './state.js';
 import { damageEnemy, applySlow } from './enemies.js';
 
-export function spawnBolt(tower, target, stats, type) {
+export function spawnBolt(tower, target, stats, type, dmgMult) {
   return {
     id: tower._projId || 0,
     type: type || 'bolt',
@@ -11,7 +11,7 @@ export function spawnBolt(tower, target, stats, type) {
     tx: target.x,
     ty: target.y,
     targetId: target.id,
-    damage: stats.damage,
+    damage: stats.damage * (dmgMult ?? 1),
     speed: 400,
     splash: stats.splash || 0,
     slow: stats.slow || 0,
@@ -21,6 +21,8 @@ export function spawnBolt(tower, target, stats, type) {
     color: tower._color || '#fff',
     alive: true,
     towerType: tower.type,
+    // Lance pierce: ignore armour.
+    ignoreArmor: !!stats.pierce,
   };
 }
 
@@ -45,7 +47,7 @@ export function updateProjectiles(state, dt, audio, effects) {
       // Hit.
       p.alive = false;
       if (target && target.alive) {
-        damageEnemy(state, target, p.damage, effects);
+        damageEnemy(state, target, p.damage, effects, { ignoreArmor: p.ignoreArmor });
         audio.play('hit');
         effects.addHitParticles(target.x, target.y, p.color);
 
@@ -55,7 +57,7 @@ export function updateProjectiles(state, dt, audio, effects) {
             if (e === target || !e.alive) continue;
             const sd = Math.sqrt((e.x - target.x) ** 2 + (e.y - target.y) ** 2);
             if (sd <= p.splash) {
-              damageEnemy(state, e, p.damage * 0.6, effects);
+              damageEnemy(state, e, p.damage * 0.6, effects, { ignoreArmor: p.ignoreArmor });
             }
           }
           effects.addSplashRing(target.x, target.y, p.splash, p.color);
@@ -79,7 +81,7 @@ export function updateProjectiles(state, dt, audio, effects) {
             }
             if (!best) break;
             hit.add(best.id);
-            damageEnemy(state, best, p.damage * 0.7, effects);
+            damageEnemy(state, best, p.damage * 0.7, effects, { ignoreArmor: p.ignoreArmor });
             p.chainTargets.push({ x1: lastX, y1: lastY, x2: best.x, y2: best.y });
             lastX = best.x;
             lastY = best.y;

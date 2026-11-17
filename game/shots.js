@@ -55,6 +55,7 @@ function setupPlayScene(state, rng) {
   state.score = 4820;
   state.elapsed = 185;
   state.towersBuilt = 0;
+  state.glimmers = 9999; // Budget override so all 9 placements succeed.
 
   placeTower(state, 'prism', 3, 3);
   placeTower(state, 'prism', 5, 7);
@@ -63,15 +64,17 @@ function setupPlayScene(state, rng) {
   placeTower(state, 'frost', 4, 5);
   placeTower(state, 'frost', 11, 3);
   placeTower(state, 'arc', 9, 5);
-  placeTower(state, 'prism', 12, 5);
-  state.glimmers = 180;
+  placeTower(state, 'lance', 12, 5);
+  placeTower(state, 'bloom', 6, 3);
+  state.glimmers = 180; // HUD must show 180 for the staged scene.
 
-  const enemyTypes = ['mote', 'skulker', 'husk', 'mote', 'skulker', 'wisp'];
-  for (let i = 0; i < 6; i++) {
+  const enemyTypes = ['mote', 'skulker', 'splitter', 'mender', 'skulker', 'mote'];
+  for (let i = 0; i < enemyTypes.length; i++) {
     const type = enemyTypes[i];
-    const e = spawnEnemy(state, type, 5, rng);
-    e.wpIndex = Math.min(2 + i, WAYPOINTS.length - 1);
-    e.progress = 100 + i * 80;
+    // Spread enemies across different waypoints along the path.
+    const wpIdx = Math.min(2 + i, WAYPOINTS.length - 1);
+    const [wx, wy] = WAYPOINTS[wpIdx];
+    spawnEnemy(state, type, 5, rng, { x: wx, y: wy, wpIndex: wpIdx, progress: 100 + i * 80 });
   }
 }
 

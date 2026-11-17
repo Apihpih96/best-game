@@ -32,6 +32,7 @@ export function updateCards(glimmers, selectedCard) {
 export function updateTop(state) {
   $('hud-glimmers').textContent = `✦ ${state.glimmers}`;
   $('hud-light').textContent = `☀ ${state.light}`;
+  $('hud-light').classList.toggle('low', state.light <= 5);
   $('hud-wave').textContent = `Wave ${state.wave}/${TOTAL_WAVES}`;
   $('hud-score').textContent = state.score.toString();
 }
@@ -123,8 +124,8 @@ export function showOverlay(type, state, onAction) {
     const best = loadBestScore();
     overlay.innerHTML = `
       <h1>✦ Glimmerhold ✦</h1>
-      <p>Defend the crystal against the shadow horde.<br>Place towers, upgrade, survive 10 waves.</p>
-      <p style="font-size:12px;color:#888;margin-top:8px">Keys: 1-4 towers, Space wave, P pause, F fast, M mute, Esc cancel</p>
+      <p>Defend the crystal against the shadow horde.<br>Place towers, upgrade, survive 12 waves.</p>
+      <p style="font-size:12px;color:#888;margin-top:8px">Click to place/select towers. Keys: 1-6 (Prism, Ember, Frost, Arc, Lance, Bloom), Space wave, P pause, F fast, M mute, Esc cancel.</p>
       ${best > 0 ? `<p>Best score: ${best}</p>` : ''}
       <button id="btn-start">Play</button>
       <div class="keys">Press Enter to start</div>
